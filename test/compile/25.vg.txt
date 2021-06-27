@@ -1,0 +1,11 @@
+// -*- mode: javascript -*-
+
+// while 文のバリエーション
+
+func main(){
+  var a = 1;
+  while (2 == 3) {
+    set a = a + 4;
+    set a = a + 5;
+  }
+}
