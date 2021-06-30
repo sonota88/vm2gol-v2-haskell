@@ -3,7 +3,7 @@ import qualified Json as Json
 
 data TEnv = Env {
   lvarNames :: [String],
-  fans :: [String],
+  fnArgNames :: [String],
   labelId :: Int
   }
   deriving Show
@@ -128,8 +128,8 @@ genExpr env expr =
         let disp = lvarDisp (lvarNames env) s
         in
           (env, "  cp " ++ "[bp:" ++ (show disp) ++ "]" ++ " reg_a\n")
-      else if elem s (fans env) then
-        let disp = fnArgDisp (fans env) s
+      else if elem s (fnArgNames env) then
+        let disp = fnArgDisp (fnArgNames env) s
         in
           (env, "  cp " ++ "[bp:" ++ (show disp) ++ "]" ++ " reg_a\n")
       else
@@ -368,7 +368,7 @@ genFuncDef env funcDef =
                 StrNode s -> s
                 _ -> error "must not happen"
             ) fnArgNames
-          env50 = env { fans = fans_, lvarNames = [] }
+          env50 = env { fnArgNames = fans_, lvarNames = [] }
           asm10 = "label " ++ fnName ++ "\n"
                    ++ asmPrologue
           (env10, asm20) = genFuncBody env50 stmts
@@ -397,7 +397,7 @@ genTopStmts topStmts =
   in
     asmTopStmts
   where
-    initialEnv = Env { lvarNames = [], fans = [], labelId = 1 }
+    initialEnv = Env { lvarNames = [], fnArgNames = [], labelId = 1 }
 
 genBuiltinSetVram :: String
 genBuiltinSetVram = "label set_vram\n"
