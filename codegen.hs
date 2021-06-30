@@ -359,7 +359,7 @@ genFuncDef env funcDef =
     [
       StrNode "func",
       StrNode fnName,
-      ListNode fnArgNames,
+      ListNode fnArgNames_,
       ListNode stmts
       ] ->
       let fans_ = map (
@@ -367,7 +367,7 @@ genFuncDef env funcDef =
               case it of
                 StrNode s -> s
                 _ -> error "must not happen"
-            ) fnArgNames
+            ) fnArgNames_
           env50 = env { fnArgNames = fans_, lvarNames = [] }
           asm10 = "label " ++ fnName ++ "\n"
                    ++ asmPrologue
