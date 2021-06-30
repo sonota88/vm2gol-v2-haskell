@@ -385,10 +385,10 @@ iterGenTopStmts env topStmts =
   case topStmts of
     [] -> (env, "")
     ListNode stmt : restStmts ->
-      let (env20, fnDefAsm) = genFuncDef env stmt
-          (env50, restAsm) = iterGenTopStmts env20 restStmts
+      let (env20, asmFnDef) = genFuncDef env stmt
+          (env50, asmRest) = iterGenTopStmts env20 restStmts
       in
-        (env50, fnDefAsm ++ restAsm)
+        (env50, asmFnDef ++ asmRest)
     _ -> error "must not happen"
 
 genTopStmts :: [TNode] -> String
