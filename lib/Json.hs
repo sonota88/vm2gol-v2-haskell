@@ -1,6 +1,7 @@
 module Json where
 
-import Data.List
+import qualified Data.List as List
+
 import Types
 import qualified Utils as U
 
@@ -19,7 +20,7 @@ listToStr nodes lv pretty =
   (if pretty then (indent lv) else "")
   ++ "[" ++ (if pretty then "\n" else "")
   ++ (
-      (intercalate
+      (List.intercalate
         (if pretty then ",\n" else ", ")
         (map (\node -> nodeToStr node (lv + 1) pretty) nodes))
      )
