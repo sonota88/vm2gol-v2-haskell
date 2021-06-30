@@ -2,7 +2,7 @@ import Types
 import qualified Json as Json
 
 data TEnv = Env {
-  lvs :: [String],
+  lvarNames :: [String],
   fans :: [String],
   labelId :: Int
   }
@@ -124,8 +124,8 @@ genExpr env expr =
   case expr of
     IntNode n -> (env, "  cp " ++ (show n) ++ " reg_a\n")
     StrNode s ->
-      if elem s (lvs env) then
-        let disp = lvarDisp (lvs env) s
+      if elem s (lvarNames env) then
+        let disp = lvarDisp (lvarNames env) s
         in
           (env, "  cp " ++ "[bp:" ++ (show disp) ++ "]" ++ " reg_a\n")
       else if elem s (fans env) then
@@ -138,8 +138,8 @@ genExpr env expr =
 
 _genSet :: TEnv -> String -> TNode -> (TEnv, String)
 _genSet env varName expr =
-  if elem varName (lvs env) then
-    let disp = lvarDisp (lvs env) varName
+  if elem varName (lvarNames env) then
+    let disp = lvarDisp (lvarNames env) varName
         (env50, asmExpr) = genExpr env expr
     in
       (
@@ -201,8 +201,8 @@ genCallSet env stmt =
       ->
       let asmFuncall = _genFuncall env funcall
       in
-        if elem varName (lvs env) then
-          let disp = lvarDisp (lvs env) varName
+        if elem varName (lvarNames env) then
+          let disp = lvarDisp (lvarNames env) varName
           in
             asmFuncall ++ "  cp reg_a [bp:" ++ (show disp) ++ "]\n"
         else
@@ -341,7 +341,7 @@ genFuncBody env stmts =
     ListNode stmt : rest ->
       case stmt of
         (StrNode "var" : StrNode varName : _) ->
-          let env5 = env { lvs = ((lvs env) ++ [varName]) }
+          let env5 = env { lvarNames = ((lvarNames env) ++ [varName]) }
               (env6, asmVar) = genVar env5 stmt
               (env10, asmFn) = genFuncBody env6 rest
           in
@@ -368,7 +368,7 @@ genFuncDef env funcDef =
                 StrNode s -> s
                 _ -> error "must not happen"
             ) fnArgNames
-          env50 = env { fans = fans_, lvs = [] }
+          env50 = env { fans = fans_, lvarNames = [] }
           asm10 = "label " ++ fnName ++ "\n"
                    ++ asmPrologue
           (env10, asm20) = genFuncBody env50 stmts
@@ -397,7 +397,7 @@ genTopStmts topStmts =
   in
     asmTopStmts
   where
-    initialEnv = Env { lvs = [], fans = [], labelId = 1 }
+    initialEnv = Env { lvarNames = [], fans = [], labelId = 1 }
 
 genBuiltinSetVram :: String
 genBuiltinSetVram = "label set_vram\n"
