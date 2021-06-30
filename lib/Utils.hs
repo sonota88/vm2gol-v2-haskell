@@ -1,7 +1,9 @@
 module Utils where
 
+import Data.Char as Char
+
 isDigitChar :: Char -> Bool
-isDigitChar c = ('0' <= c) && (c <= '9')
+isDigitChar = Char.isDigit
 
 matchInt :: String -> Int
 matchInt str =
