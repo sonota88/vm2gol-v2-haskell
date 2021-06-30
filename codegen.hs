@@ -28,12 +28,6 @@ nameIndex names name =
   in
     iter names name 0
 
-includesName :: [String] -> String -> Bool
-includesName names name =
-  case (nameIndex names name) of
-    Just _ -> True
-    Nothing -> False
-
 lvarDisp :: [String] -> String -> Int
 lvarDisp names name =
   case (nameIndex names name) of
@@ -130,11 +124,11 @@ genExpr env expr =
   case expr of
     IntNode n -> (env, "  cp " ++ (show n) ++ " reg_a\n")
     StrNode s ->
-      if (includesName (lvs env) s) then
+      if elem s (lvs env) then
         let disp = lvarDisp (lvs env) s
         in
           (env, "  cp " ++ "[bp:" ++ (show disp) ++ "]" ++ " reg_a\n")
-      else if (includesName (fans env) s) then
+      else if elem s (fans env) then
         let disp = fnArgDisp (fans env) s
         in
           (env, "  cp " ++ "[bp:" ++ (show disp) ++ "]" ++ " reg_a\n")
@@ -144,7 +138,7 @@ genExpr env expr =
 
 _genSet :: TEnv -> String -> TNode -> (TEnv, String)
 _genSet env varName expr =
-  if includesName (lvs env) varName then
+  if elem varName (lvs env) then
     let disp = lvarDisp (lvs env) varName
         (env50, asmExpr) = genExpr env expr
     in
@@ -207,7 +201,7 @@ genCallSet env stmt =
       ->
       let asmFuncall = _genFuncall env funcall
       in
-        if includesName (lvs env) varName then
+        if elem varName (lvs env) then
           let disp = lvarDisp (lvs env) varName
           in
             asmFuncall ++ "  cp reg_a [bp:" ++ (show disp) ++ "]\n"
